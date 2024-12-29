@@ -25,7 +25,7 @@ def solution(filename):
         for line in f:
             hand, bid = line.split()
             hands.append((fix(hand), int(bid)))
-    hands.sort(key=lambda x: x[0])
+    hands.sort()
     answer = 0
     for i, hand in enumerate(hands):
         answer += (i + 1) * hand[1]
