@@ -1,18 +1,14 @@
 INPUT_FILE = "input.txt"
 
 def solution(filename):
-    def solve(numbers):
-        sequences = [numbers]
-        answer = numbers[0]
+    def solve(sequence):
         sign = 1
-        while any(sequences[-1]):
-            last_sequence = sequences[-1]
-            new_sequence = []
-            for i in range(1, len(last_sequence)):
-                new_sequence.append(last_sequence[i] - last_sequence[i - 1])
-            sequences.append(new_sequence)
+        answer = sequence[0]
+        while any(sequence):
+            sequence = [sequence[i] - sequence[i - 1]
+                        for i in range(1, len(sequence))]
             sign *= -1
-            answer += sign * new_sequence[0]
+            answer += sign * sequence[0]
         return answer
     
     with open(filename) as f:
