@@ -12,8 +12,8 @@ def get_rank(hand):
     return str(strings.index(freq_str) + 1)
 
 def fix(hand):
-    repl = {'T': 'A', 'J': 'B', 'Q': 'C',
-            'K': 'D', 'A': 'E', 'J': '0'}
+    repl = {'T': 'A', 'J': '0', 'Q': 'C',
+            'K': 'D', 'A': 'E'}
     hand = hand.translate(str.maketrans(repl))
     return get_rank(hand) + hand
 
