@@ -26,10 +26,7 @@ def solution(filename):
             hand, bid = line.split()
             hands.append((fix(hand), int(bid)))
     hands.sort()
-    answer = 0
-    for i, hand in enumerate(hands):
-        answer += (i + 1) * hand[1]
-    return answer
+    return sum((i + 1) * h[1] for i, h in enumerate(hands))
 
 if __name__ == "__main__":
     print(solution(INPUT_FILE))
