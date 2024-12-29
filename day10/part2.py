@@ -28,22 +28,22 @@ DIRECTIONS = {"|": [N, S],
               ".": [],
               "S": [N, S, E, W]}
 
-RIGHT = {("|", N): [E],
-         ("|", S): [W],
-         ("-", E): [S],
-         ("-", W): [N],
-         ("L", N): [],
-         ("L", E): [W, S],
-         ("J", N): [S, E],
-         ("J", W): [],
-         ("7", S): [],
-         ("7", W): [E, N],
-         ("F", S): [N, W],
-         ("F", E): [],
-         ("S", N): [E],
-         ("S", S): [W],
-         ("S", E): [S],
-         ("S", W): [N]}
+RIGHT_SIDE = {("|", N): [E],
+              ("|", S): [W],
+              ("-", E): [S],
+              ("-", W): [N],
+              ("L", N): [],
+              ("L", E): [W, S],
+              ("J", N): [S, E],
+              ("J", W): [],
+              ("7", S): [],
+              ("7", W): [E, N],
+              ("F", S): [N, W],
+              ("F", E): [],
+              ("S", N): [E],
+              ("S", S): [W],
+              ("S", E): [S],
+              ("S", W): [N]}
 
 def solution(filename):
     def read_input():
@@ -98,14 +98,14 @@ def solution(filename):
             if next_node:
                 symbol = matrix[node[0]][node[1]]
                 right_side = [move(node, d)
-                              for d in RIGHT[(symbol, dir)]]
+                              for d in RIGHT_SIDE[(symbol, dir)]]
                 for node_right in right_side:
                     if not fill(node_right, "R"):
                         inside = "L"
                 
                 left_side = [move(node, d)
                              for d in (N, S, E, W)
-                             if d not in RIGHT[(symbol, dir)]]
+                             if d not in RIGHT_SIDE[(symbol, dir)]]
                 for node_left in left_side:
                     if not fill(node_left, "L"):
                         inside = "R"
