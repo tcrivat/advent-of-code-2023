@@ -1,5 +1,3 @@
-import math
-
 INPUT_FILE = "input.txt"
 
 def get_rank(hand):
