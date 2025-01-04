@@ -1,12 +1,13 @@
 """
-    To tilt the platform towards the north, I iterate through
-the columns from the north to the south and remember the position
-of the last rock on that column. If I encounter a new fixed rock,
-I set this as the pposition of the last rock; if the rock is round,
-I move it immediately below the last position and increment the
-last position.
+    I tilt the platform in cycles and after each cycle, I
+store the positions of all the stones on the platform. If
+I encounter again a position that I saw before, it means
+that the positions are repeating. I determine the period
+with which the positions are repeating and finally determine
+the answer by using the modulo operator.
 """
 INPUT_FILE = "input.txt"
+CYCLES = 1000000000
 
 def solution(filename):
     def read_input():
@@ -27,6 +28,39 @@ def solution(filename):
                     matrix[i][j] = "."
                     matrix[last_rock][j] = "O"
     
+    def tilt_south():
+        for j in range(m):
+            last_rock = n
+            for i in range(n - 1, -1, -1):
+                if matrix[i][j] == "#":
+                    last_rock = i
+                elif matrix[i][j] == "O":
+                    last_rock -= 1
+                    matrix[i][j] = "."
+                    matrix[last_rock][j] = "O"
+    
+    def tilt_west():
+        for i in range(n):
+            last_rock = -1
+            for j in range(m):
+                if matrix[i][j] == "#":
+                    last_rock = j
+                elif matrix[i][j] == "O":
+                    last_rock += 1
+                    matrix[i][j] = "."
+                    matrix[i][last_rock] = "O"
+    
+    def tilt_east():
+        for i in range(n):
+            last_rock = m
+            for j in range(m - 1, -1, -1):
+                if matrix[i][j] == "#":
+                    last_rock = j
+                elif matrix[i][j] == "O":
+                    last_rock -= 1
+                    matrix[i][j] = "."
+                    matrix[i][last_rock] = "O"
+    
     def count_load():
         return sum(row.count("O") * (n - i)
                    for i, row in enumerate(matrix))
@@ -37,12 +71,34 @@ def solution(filename):
                 print(matrix[i][j], end="")
             print()
     
+    def matrix_repr():
+        return "".join("".join(row) for row in matrix)
+    
+    def solve():
+        results = []
+        mappings = {}
+        while True:
+            tilt_north()
+            tilt_west()
+            tilt_south()
+            tilt_east()
+            # print()
+            # print("After", len(results) , "cycles:")
+            # print_map()
+            current_matrix = matrix_repr()
+            if current_matrix in mappings:
+                first = mappings[current_matrix]
+                period = len(results) - first
+                start = len(results) // period * period
+                return results[start:] + results[first:start]
+            mappings[current_matrix] = len(results)
+            results.append(count_load())
+    
     matrix = read_input()
     n = len(matrix)
     m = len(matrix[0])
-    tilt_north()
-    # print_map()
-    return count_load()
+    results = solve()
+    return results[(CYCLES - 1) % len(results)]
 
 if __name__ == "__main__":
     print(solution(INPUT_FILE))
