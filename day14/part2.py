@@ -75,7 +75,7 @@ def solution(filename):
         return "".join("".join(row) for row in matrix)
     
     def solve():
-        loads = []
+        results = []
         mappings = {}
         while True:
             tilt_north()
@@ -83,21 +83,22 @@ def solution(filename):
             tilt_south()
             tilt_east()
             # print()
-            # print("After", len(loads) , "cycles:")
+            # print("After", len(results) , "cycles:")
             # print_map()
             current_matrix = matrix_repr()
             if current_matrix in mappings:
-                start = mappings[current_matrix]
-                period = len(loads) - start
-                return loads[period:] + loads[start:period]
-            mappings[current_matrix] = len(loads)
-            loads.append(count_load())
+                first = mappings[current_matrix]
+                period = len(results) - first
+                start = len(results) // period * period
+                return results[start:] + results[first:start]
+            mappings[current_matrix] = len(results)
+            results.append(count_load())
     
     matrix = read_input()
     n = len(matrix)
     m = len(matrix[0])
-    loads = solve()
-    return loads[(CYCLES - 1) % len(loads)]
+    results = solve()
+    return results[(CYCLES - 1) % len(results)]
 
 if __name__ == "__main__":
     print(solution(INPUT_FILE))
