@@ -1,11 +1,25 @@
 """
-    I keep a set of nodes (garden plots) that are currently
-reachable on the map. For each step, I replace each node in
-the set with the plots reachable from there in one step (its
-neighbors). A neighbor is a one of the 4 nearby plots (in the
-4 directions) that does not contain a rock.
-    After 64 iterations, the set contains all the plots that
-are reachable.
+    I start exploring the map in a BFS-like manner, starting
+from the position marked with "S". I keep a set of visited
+nodes and another set of newly visited nodes (nodes visited
+during the last iteration). Initially both sets contain the
+start node.
+    Then I do 64 iterations, one for each step, in which I
+compute the new frontier (the new set of nodes that are
+reachable for the first time during this iteration). The total
+number of positions reachable after a number of steps is
+equal to the number of steps reachable in the previous 2
+iterations added with the number of new steps reachable during
+the current iteration. This is true because for an area that
+was already visited, the reachable positions alternate from one
+iteration to the next: if a certain set of nodes are reachable
+in one iteration, the others (positioned between them) will
+become reachable during the next iteration, then again the same
+set will become reachable again after yet another iteration/step.
+    To compute the number of reachable positions after a certain
+number of steps, only the last two values are needed (the number
+of reachable positions after steps-1 and steps-2). So I only
+keep in memory these last two values (c1 and c2).
 """
 INPUT_FILE = "input.txt"
 DIRECTIONS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
@@ -39,13 +53,19 @@ def solution(filename):
                 yield neigh
     
     def solve_map(start):
-        nodes = {start}
+        c1, c2 = 0, 1
+        visited = {start}
+        frontier = {start}
         for _ in range(STEPS):
-            new_nodes = set()
-            for node in nodes:
-                new_nodes.update(get_neighbors(node))
-            nodes = new_nodes
-        return len(nodes)
+            new_frontier = set()
+            for node in frontier:
+                for neigh in get_neighbors(node):
+                    if neigh not in visited:
+                        visited.add(neigh)
+                        new_frontier.add(neigh)
+            frontier = new_frontier
+            c1, c2 = c2, c1 + len(frontier)
+        return c2
     
     matrix = read_input()
     n = len(matrix)

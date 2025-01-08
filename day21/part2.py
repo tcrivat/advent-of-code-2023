@@ -45,9 +45,11 @@ identical to one of these 9 cases.
 the starting position in each of these 9 cases. For each case, the number
 of reachable plots steadily increases until the whole area of the map is
 covered, and afterwards cycles between two values which are repeated to
-infinity. As soon as I detect the repeated values, I stop iterating as all
-the other values can be determined by taking the last odd or even position
-(for an even number of steps I take the last even position from this list).
+infinity, as there are no new nodes which were not visited before on that
+map. I stop iterating as soon as I detect that no new nodes are visited.
+The values for a greater number of steps can be determined by taking the
+last odd or even position (for an even number of steps I take the last
+even position from this list), so there is no need to store more values.
     Now, for a given number of STEPS, the maximum tiles reached are at a
 distance equal to (STEPS - 1) // n.
     To compute the result, for each distance from zero to the maximum, I
@@ -89,22 +91,20 @@ def solution(filename):
             if is_valid(neigh := move(node, d)):
                 yield neigh
     
-    def is_repeating(counts):
-        return (len(counts) >= 4 and
-                counts[-1] == counts[-3] and
-                counts[-2] == counts[-4])
-    
     def solve_map(start):
-        nodes = {start}
-        counts = [1]
-        while not is_repeating(counts):
-            new_nodes = set()
-            for node in nodes:
-                new_nodes.update(get_neighbors(node))
-            nodes = new_nodes
-            counts.append(len(nodes))
-        del counts[-2:]
-        return counts
+        counts = [0, 1]
+        visited = {start}
+        frontier = {start}
+        while frontier:
+            new_frontier = set()
+            for node in frontier:
+                for neigh in get_neighbors(node):
+                    if neigh not in visited:
+                        visited.add(neigh)
+                        new_frontier.add(neigh)
+            frontier = new_frontier
+            counts.append(counts[-2] + len(frontier))
+        return counts[1:-1]
     
     def precompute_counts():
         START = { -1: n - 1,
@@ -119,11 +119,10 @@ def solution(filename):
     def get_count(counts, step):
         if step < len(counts):
             return counts[step]
+        elif step % 2 == len(counts) % 2:
+            return counts[-2]
         else:
-            if step % 2 != len(counts) % 2:
-                return counts[-1]
-            else:
-                return counts[-2]
+            return counts[-1]
     
     def solve():
         answer = get_count(counts_per_map[(0, 0)], STEPS)
